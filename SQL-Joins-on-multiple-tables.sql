@@ -21,7 +21,7 @@ join sakila.film f on fc.film_id = f.film_id
 group by c.name;
 
 #4. Which film categories are longest?
-select c.name, f.length
+select c.name, max(f.length)
 from sakila.category c
 join sakila.film_category fc on c.category_id = fc.category_id
 join sakila.film f on fc.film_id = f.film_id
@@ -37,18 +37,18 @@ group by f.film_id
 order by most_frequently_rented desc;
 
 #6. List the top five genres in gross revenue in descending order.
-select c.name, sum(p.amount)
+select c.name, sum(p.amount) as amount
 from sakila.category c
 left join sakila.film_category fc on c.category_id = fc.category_id
 left join sakila.inventory i on fc.film_id = i.film_id
 left join sakila.rental r on i.inventory_id = r.inventory_id
 left join sakila.payment p on r.rental_id = p.rental_id
 group by c.name
-order by c.name desc limit 5;
+order by amount desc limit 5;
 
 #7. Is "Academy Dinosaur" available for rent from Store 1?
 create temporary table tmp_table as 
-select f.film_id, r.inventory_id, r.return_date
+select distinct(f.film_id), r.inventory_id, max(r.return_date) as return_date
 from sakila.film f 
 join sakila.inventory i on f.film_id = i.film_id
 join sakila.rental r on i.inventory_id = r.inventory_id
